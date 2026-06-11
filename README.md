@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="screenshot.png" alt="screenshot" height="300" />
+</div>
+
 # OmniStorage Todo CRUD Dashboard
 
 A Node.js web application implementing a Todo CRUD using `@x-labs-myid/omnistorage`. This application showcases dynamic switching of storage engines, live storage usage statistics, and a real-time operation logging viewer using Bootstrap 5 and FontAwesome.
@@ -33,6 +37,7 @@ Ensure you have **Node.js** (v18+) and **npm** installed on your system.
 ### Running the Application
 
 1. Start the Express server:
+
    ```bash
    node server.js
    ```
@@ -53,16 +58,16 @@ Ensure you have **Node.js** (v18+) and **npm** installed on your system.
 This sample uses a normal Vite configuration. OmniStorage no longer requires aliases for Node-only modules such as `fs`, `fs/promises`, `path`, `better-sqlite3`, `bindings`, or `util` when building the browser client.
 
 ```js
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig({
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true
-      }
-    }
-  }
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
 });
 ```
