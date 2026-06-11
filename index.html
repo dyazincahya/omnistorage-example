@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniStorage Todo CRUD Dashboard</title>
+  <link rel="icon" type="image/png" href="/src/assets/icon.png" />
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome 6 CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-transparent border-bottom border-secondary-subtle py-3">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="/src/assets/icon.png" alt="Logo" width="32" height="32" class="me-2">
+        <span class="fs-4 fw-bold">Omni<span class="gradient-text">Storage</span> Todo</span>
+      </a>
+      
+      <!-- Engine Selector -->
+      <div class="d-flex align-items-center">
+        <label for="engineSelector" class="text-secondary me-2 fw-semibold d-none d-sm-inline">Storage Engine:</label>
+        <select id="engineSelector" class="custom-select">
+          <optgroup label="Client Storage (Browser)">
+            <option value="local">Local Storage</option>
+            <option value="session">Session Storage</option>
+            <option value="cookie">Cookies</option>
+            <option value="indexeddb">IndexedDB</option>
+            <option value="memory-client">Browser In-Memory</option>
+          </optgroup>
+          <optgroup label="Server Storage (Node.js)">
+            <option value="file" selected>File Storage</option>
+            <option value="sqlite-server">SQLite Server</option>
+            <option value="memory-server">Server In-Memory</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container py-5">
+    
+    <!-- Stats Cards Row -->
+    <div class="row g-4 mb-5" id="statsRow">
+      <!-- Database Name Card -->
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-panel p-4 hover-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="text-secondary fw-bold text-uppercase m-0">Database/Namespace</h6>
+            <i class="fa-solid fa-database text-primary fs-4"></i>
+          </div>
+          <h3 class="fw-bold m-0" id="dbNameText">-</h3>
+        </div>
+      </div>
+      <!-- Storage Engine Card -->
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-panel p-4 hover-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="text-secondary fw-bold text-uppercase m-0">Active Engine</h6>
+            <i class="fa-solid fa-server text-success fs-4"></i>
+          </div>
+          <h3 class="fw-bold m-0 text-capitalize text-success" id="activeEngineText">-</h3>
+        </div>
+      </div>
+      <!-- Total Todos Card -->
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-panel p-4 hover-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="text-secondary fw-bold text-uppercase m-0">Total Todos</h6>
+            <i class="fa-solid fa-list-check text-info fs-4"></i>
+          </div>
+          <h3 class="fw-bold m-0" id="totalTodosText">0</h3>
+        </div>
+      </div>
+      <!-- Size Card -->
+      <div class="col-md-3 col-sm-6">
+        <div class="glass-panel p-4 hover-card h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="text-secondary fw-bold text-uppercase m-0">Storage Size</h6>
+            <i class="fa-solid fa-weight-hanging text-warning fs-4"></i>
+          </div>
+          <h3 class="fw-bold m-0 text-warning" id="storageSizeText">0 KB</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row g-5">
+      <!-- Left Column: Add Todo Form -->
+      <div class="col-lg-4">
+        <div class="glass-panel p-4">
+          <h4 class="fw-bold mb-4 d-flex align-items-center">
+            <i class="fa-solid fa-plus-circle text-primary me-2"></i>
+            <span>Add New Todo</span>
+          </h4>
+          
+          <form id="todoForm">
+            <div class="mb-3">
+              <label for="todoTitle" class="form-label text-secondary fw-semibold">Todo Title</label>
+              <input type="text" class="form-control bg-dark border-secondary text-light py-2" id="todoTitle" placeholder="What needs to be done?" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="todoDescription" class="form-label text-secondary fw-semibold">Description</label>
+              <textarea class="form-control bg-dark border-secondary text-light py-2" id="todoDescription" rows="3" placeholder="Optional details..."></textarea>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label text-secondary fw-semibold d-block">Priority</label>
+              <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="priority" id="prioLow" value="low" autocomplete="off">
+                <label class="btn btn-outline-success" for="prioLow">Low</label>
+
+                <input type="radio" class="btn-check" name="priority" id="prioMedium" value="medium" autocomplete="off" checked>
+                <label class="btn btn-outline-warning" for="prioMedium">Medium</label>
+
+                <input type="radio" class="btn-check" name="priority" id="prioHigh" value="high" autocomplete="off">
+                <label class="btn btn-outline-danger" for="prioHigh">High</label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-gradient w-100 py-3">
+              <i class="fa-solid fa-paper-plane me-2"></i> Save Task
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Todo list -->
+      <div class="col-lg-8">
+        <div class="glass-panel p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h4 class="fw-bold m-0 d-flex align-items-center">
+              <i class="fa-solid fa-tasks text-primary me-2"></i>
+              <span>Todo Tasks <span id="storageLabel" class="badge bg-primary fs-6 ms-2">Server</span></span>
+            </h4>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm" id="refreshBtn">
+                <i class="fa-solid fa-sync"></i> Refresh
+              </button>
+              <button class="btn btn-outline-danger btn-sm" id="clearBtn">
+                <i class="fa-solid fa-trash-can"></i> Clear All
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="input-group mb-4">
+            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-search"></i></span>
+            <input type="text" id="searchTodo" class="form-control bg-dark border-secondary text-light" placeholder="Search tasks by title...">
+          </div>
+
+          <!-- Todo Items List -->
+          <div id="todoList" class="d-flex flex-column gap-3">
+            <!-- Dynamic Todo items will appear here -->
+            <div class="text-center py-5 text-secondary">
+              <i class="fa-solid fa-face-smile fs-1 mb-3"></i>
+              <p class="m-0">No tasks created yet. Add one to get started!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logs Row -->
+    <div class="row g-5 mt-5">
+      <div class="col-12">
+        <div class="glass-panel p-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold m-0 d-flex align-items-center text-secondary">
+              <i class="fa-solid fa-receipt text-primary me-2"></i>
+              <span>Activity Logs <span id="logsLabel" class="badge bg-primary fs-6 ms-2">Server</span></span>
+            </h5>
+            <button class="btn btn-outline-secondary btn-sm" id="clearLogsBtn">
+              Clear Logs
+            </button>
+          </div>
+          <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-dark table-hover m-0">
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 15%">Timestamp</th>
+                  <th scope="col" style="width: 15%">Operation</th>
+                  <th scope="col" style="width: 15%">Engine</th>
+                  <th scope="col" style="width: 15%">Status</th>
+                  <th scope="col">Details / Key</th>
+                </tr>
+              </thead>
+              <tbody id="logsTableBody">
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-secondary">No logs recorded.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast align-items-center text-white bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <i id="toastIcon" class="fa-solid fa-circle-info text-info"></i>
+          <span id="toastMsg">Notification message</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Client JavaScript -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
