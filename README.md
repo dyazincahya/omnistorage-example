@@ -17,6 +17,8 @@ A Node.js web application implementing a Todo CRUD using `@x-labs-myid/omnistora
 
 - **Backend**: Node.js, Express.js
 - **Storage Layer**: `@x-labs-myid/omnistorage`
+  - npm: https://www.npmjs.com/package/@x-labs-myid/omnistorage
+  - Documentation: https://omnistorage.js.org
 - **Frontend**: Vanilla JavaScript, Bootstrap 5 (Styling), FontAwesome 6 (Icons)
 
 ---
@@ -26,6 +28,11 @@ A Node.js web application implementing a Todo CRUD using `@x-labs-myid/omnistora
 ### Prerequisites
 
 Ensure you have **Node.js** (v18+) and **npm** installed on your system.
+
+This example uses `@x-labs-myid/omnistorage`. See the npm package and official documentation for API details:
+
+- npm: https://www.npmjs.com/package/@x-labs-myid/omnistorage
+- Docs: https://omnistorage.js.org
 
 ### Installation
 
