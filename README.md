@@ -53,6 +53,29 @@ Ensure you have **Node.js** (v18+) and **npm** installed on your system.
 - **File**: Stores items inside a JSON file named after the database in your workspace (e.g. `<dbname>.json`). Data is persistent.
 - **SQLite Server**: Stores items in a local SQLite database file in the workspace. Data is persistent.
 
+### Deploying to Vercel
+
+This example includes `vercel.json` and `api/index.js` so it can run on Vercel as a Vite static frontend plus an Express serverless API.
+
+Important Vercel behavior:
+
+- Vercel functions are serverless and do not provide persistent local filesystem storage.
+- In Vercel, this example automatically uses the `memory` server engine only.
+- Server-side todos/logs on Vercel are ephemeral and may reset between cold starts or function instances.
+- Client engines (`local`, `session`, `cookie`, `indexeddb`, and browser `memory`) continue to work in the browser.
+- For persistent server-side storage in production, connect the API to an external database instead of using local `file` or `sqlite-server` storage.
+
+Deploy steps:
+
+1. Push this repository to GitHub.
+2. Import the repository in Vercel.
+3. Use the default Vite build settings:
+   - Build command: `npm run build`
+   - Output directory: `dist`
+4. Deploy.
+
+The API routes are served through the Vercel serverless function at `/api/*`.
+
 ### Vite Configuration
 
 This sample uses a normal Vite configuration. OmniStorage no longer requires aliases for Node-only modules such as `fs`, `fs/promises`, `path`, `better-sqlite3`, `bindings`, or `util` when building the browser client.

@@ -8,13 +8,18 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const IS_VERCEL = process.env.VERCEL === "1";
+const SERVER_ENGINES = IS_VERCEL
+  ? ["memory"]
+  : ["memory", "file", "sqlite-server"];
+const DEFAULT_SERVER_ENGINE = IS_VERCEL ? "memory" : "file";
 
 app.use(express.json());
-// Serve static frontend files
+// Serve static frontend files when running the Express server locally.
 app.use(express.static(path.join(__dirname, "dist")));
 
 const DB_NAME = "omnistorage_crud";
-let activeEngine = "file";
+let activeEngine = DEFAULT_SERVER_ENGINE;
 
 function unwrapData(result, fallback = null) {
   if (result && typeof result === "object" && "data" in result) {
@@ -50,6 +55,10 @@ async function getAllValues() {
 }
 
 async function getStorageStatistics() {
+  if (IS_VERCEL && typeof store.defaultEngine?.getStats === "function") {
+    return store.defaultEngine.getStats();
+  }
+
   try {
     return unwrapData(await store.getStatistics(), {});
   } catch (error) {
@@ -88,8 +97,10 @@ function normalizeTodoValue(value) {
 
 // Configure default server storage on startup.
 try {
-  await configureStore("file");
-  console.log('Using "file" engine as default server storage.');
+  await configureStore(DEFAULT_SERVER_ENGINE);
+  console.log(
+    `Using "${DEFAULT_SERVER_ENGINE}" engine as default server storage.`,
+  );
 } catch (e) {
   await configureStore("memory");
   console.log('Falling back to "memory" engine.');
@@ -108,7 +119,7 @@ app.get("/api/config", async (req, res) => {
     res.json({
       dbName: DB_NAME,
       activeEngine,
-      availableEngines: ["memory", "file", "sqlite-server"],
+      availableEngines: SERVER_ENGINES,
       stats,
     });
   } catch (error) {
@@ -119,8 +130,12 @@ app.get("/api/config", async (req, res) => {
 // Change active engine
 app.post("/api/config/engine", async (req, res) => {
   const { engine } = req.body;
-  if (!["memory", "file", "sqlite-server"].includes(engine)) {
-    return res.status(400).json({ error: "Invalid storage engine type" });
+  if (!SERVER_ENGINES.includes(engine)) {
+    return res.status(400).json({
+      error: IS_VERCEL
+        ? 'Vercel serverless deployments only support the "memory" server engine in this example.'
+        : "Invalid storage engine type",
+    });
   }
 
   try {
@@ -269,6 +284,10 @@ app.post("/api/logs/clear", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-});
+if (!IS_VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+  });
+}
+
+export default app;

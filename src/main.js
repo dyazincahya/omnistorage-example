@@ -106,6 +106,21 @@ document.addEventListener("DOMContentLoaded", () => {
     clientStore.db(DB_NAME).use(engine);
   }
 
+  function syncServerEngineOptions(availableEngines = []) {
+    const serverOptionMap = {
+      file: "file",
+      "sqlite-server": "sqlite-server",
+      "memory-server": "memory",
+    };
+
+    for (const [optionValue, engineName] of Object.entries(serverOptionMap)) {
+      const option = engineSelector.querySelector(
+        `option[value="${optionValue}"]`,
+      );
+      if (option) option.disabled = !availableEngines.includes(engineName);
+    }
+  }
+
   // Hook up client store logs
   function addClientLog(operation, key, status, message = "") {
     clientLogs.unshift({
@@ -200,6 +215,18 @@ document.addEventListener("DOMContentLoaded", () => {
         dbNameText.textContent = data.dbName || "MyStoreDB";
         activeEngineText.textContent = `${data.activeEngine} (server)`;
         activeEngineText.className = "fw-bold m-0 text-capitalize text-success";
+        syncServerEngineOptions(data.availableEngines || []);
+
+        if (activeMode === "server") {
+          const selectorValue =
+            data.activeEngine === "memory"
+              ? "memory-server"
+              : data.activeEngine;
+          if (engineSelector.value !== selectorValue) {
+            engineSelector.value = selectorValue;
+            activeEngine = selectorValue;
+          }
+        }
 
         if (data.stats && !data.stats.error) {
           storageSizeText.textContent =
